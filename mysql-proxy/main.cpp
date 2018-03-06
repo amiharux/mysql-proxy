@@ -63,28 +63,38 @@ private:
     if (error) { return close(); }
 
     async_write(client_socket_, asio::buffer(server_data_, bytes),
-      [self = shared_from_this()](const asio::error_code& error, size_t) {
-        if (error) { return self->close(); }
-        self->server_socket_.async_read_some(asio::buffer(self->server_data_, max_data_length),
-          [=](const asio::error_code& error, size_t bytes) {
-            self->handle_server_read(error, bytes);
-          }
-        );
+      [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
+        self->handle_client_write(error, bytes);
       }
     );
   }
 
-  void handle_client_read(const asio::error_code& error, const size_t& bytes) {
+  void handle_client_write(const asio::error_code& error, size_t bytes) {
+    if (error) { return close(); }
+
+    server_socket_.async_read_some(asio::buffer(server_data_, max_data_length),
+      [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
+        self->handle_server_read(error, bytes);
+      }
+    );
+  }
+
+  void handle_client_read(const asio::error_code& error, size_t bytes) {
     if (error) { return close(); }
 
     async_write(server_socket_, asio::buffer(client_data_, bytes),
-      [self = shared_from_this()](const asio::error_code& error, size_t) {
-        if (error) { return self->close(); }
-        self->client_socket_.async_read_some(asio::buffer(self->client_data_, max_data_length),
-          [=](const asio::error_code& error, size_t bytes) {
-          self->handle_client_read(error, bytes);
-        }
-      );
+      [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
+        self->handle_server_write(error, bytes);
+      }
+    );
+  }
+
+  void handle_server_write(const asio::error_code& error, size_t bytes) {
+    if (error) { return close(); }
+
+    client_socket_.async_read_some(asio::buffer(client_data_, max_data_length),
+      [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
+        self->handle_client_read(error, bytes);
       }
     );
   }
