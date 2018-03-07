@@ -19,27 +19,10 @@ public:
 protected:
   const socket_type &_client_socket;
 
-  virtual void on_client_data_impl(unsigned char*, size_t) = 0;
-  virtual void on_server_data_impl(unsigned char*, size_t) = 0;
+  virtual void on_client_data_impl(unsigned char*, size_t) { /* do nothing */ }
+  virtual void on_server_data_impl(unsigned char*, size_t) { /* do nothing */ }
 };
 
-using p_tcp_mitm = std::unique_ptr<tcp_mitm>;
-
-class tcp_mitm_factory {
-public:
-  virtual ~tcp_mitm_factory() = default;
-  virtual std::unique_ptr<tcp_mitm> get_mitm(const socket_type &client_socket) = 0;
-};
-
-template <typename T>
-class tcp_mitm_concrete_factory : public tcp_mitm_factory {
-public:
-  virtual ~tcp_mitm_concrete_factory() override = default;
-
-  virtual p_tcp_mitm get_mitm(const socket_type &client_socket) override {
-    return std::make_unique<T>(client_socket);
-  }
-};
-
+using tcp_mitm_factory = factory<tcp_mitm, const socket_type &>;
 
 #endif // _TCP_MITM_H_

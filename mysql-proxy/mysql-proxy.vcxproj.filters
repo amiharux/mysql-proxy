@@ -27,7 +27,7 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tcp_size_logger.cpp">
+    <ClCompile Include="mysql_request_mitm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,10 @@
     <ClInclude Include="tcp_mitm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tcp_size_logger.h">
+    <ClInclude Include="mysql_request_mitm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mysql_streaming_sniffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

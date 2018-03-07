@@ -1,16 +1,16 @@
-#include "tcp_size_logger.h"
+#include "mysql_request_mitm.h"
 #include "logger.h"
 
 #include <cctype>
 
 
-tcp_size_logger::tcp_size_logger(const socket_type &client_socket) 
+mysql_request_mitm::mysql_request_mitm(const socket_type &client_socket) 
   : tcp_mitm(client_socket)
 {
   LOG_ID(identity(_client_socket)) << "[tcp_size_logger::construct]";
 }
 
-tcp_size_logger::~tcp_size_logger()
+mysql_request_mitm::~mysql_request_mitm()
 {
   LOG_ID(identity(_client_socket)) << "[tcp_size_logger::destruct]";
 }
@@ -39,8 +39,7 @@ std::string reprStr(unsigned char *data, int len)
   return s;
 }
 
-// Looking for COM_QUERY(0x03)
-void tcp_size_logger::on_client_data_impl(unsigned char* data, size_t bytes)
+void mysql_request_mitm::on_client_data_impl(unsigned char* data, size_t bytes)
 {
   LOG_ID(identity(_client_socket)) << "[tcp_size_logger::on_client_data_impl] Got " << bytes << " bytes";
   LOG << ">>>>>>";
@@ -50,7 +49,7 @@ void tcp_size_logger::on_client_data_impl(unsigned char* data, size_t bytes)
   LOG << ">>>>>>";
 }
 
-void tcp_size_logger::on_server_data_impl(unsigned char* data, size_t bytes)
+void mysql_request_mitm::on_server_data_impl(unsigned char* data, size_t bytes)
 {
   LOG_ID(identity(_client_socket)) << "[tcp_size_logger::on_server_data_impl] Got " << bytes << " bytes";
 }

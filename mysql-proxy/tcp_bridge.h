@@ -40,7 +40,7 @@ private:
   unsigned char server_data_[max_data_length];
 
   tcp_mitm_factory &mitm_factory_;
-  p_tcp_mitm mitm_;
+  std::unique_ptr<tcp_mitm> mitm_;
 
   std::mutex mutex_;
 

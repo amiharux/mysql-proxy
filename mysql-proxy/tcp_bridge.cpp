@@ -42,7 +42,7 @@ void tcp_bridge::start(const std::string& server_host, unsigned short server_por
   server_socket_.async_connect(
     asio::ip::tcp::endpoint(asio::ip::address::from_string(server_host), server_port),
     [self = shared_from_this()](const asio::error_code& error) {
-      self->mitm_ = self->mitm_factory_.get_mitm(self->client_socket_);
+      self->mitm_ = self->mitm_factory_.build(self->client_socket_);
       self->handle_server_connect(error);
     }
   );

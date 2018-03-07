@@ -6,7 +6,7 @@
 #include "tcp_bridge.h"
 #include "logger.h"
 
-#include "tcp_size_logger.h"
+#include "mysql_request_mitm.h"
 
 
 int main(int argc, char* argv[]) {
@@ -35,11 +35,11 @@ int main(int argc, char* argv[]) {
   try {
     LOG << "starting server on " << listen_host << "::" << listen_port;
 
-    tcp_size_logger_factory log_data;
+    mysql_request_mitm_factory com_query_request_logger;
     tcp_bridge::acceptor acceptor(ios,
       listen_host, listen_port,
       forward_host, forward_port,
-      log_data);
+      com_query_request_logger);
 
     acceptor.accept_connections();
 
