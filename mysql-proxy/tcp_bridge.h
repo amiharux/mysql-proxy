@@ -6,22 +6,21 @@
 #include <functional>
 #include <mutex>
 
+#include "common.h"
+#include "tcp_mitm.h"
+
 
 using on_data_cb = std::function<void(unsigned char*, size_t)>;
 const on_data_cb dummy_cb = [](unsigned char*, size_t) {};
 
 class tcp_bridge : public std::enable_shared_from_this<tcp_bridge> {
 public:
-
-  using socket_type = asio::ip::tcp::socket;
-  using ptr_type = std::shared_ptr<tcp_bridge>;
-
-  tcp_bridge(asio::io_service& ios, on_data_cb on_client_data = dummy_cb, on_data_cb on_server_data = dummy_cb);
+  tcp_bridge(asio::io_service& ios, tcp_mitm_factory &mitm_factory);
   ~tcp_bridge();
 
   socket_type& client_socket();
   socket_type& server_socket();
-  std::string identity() const;
+  std::string client_id() const;
 
   void start(const std::string& server_host, unsigned short server_port);
   void handle_server_connect(const asio::error_code& error);
@@ -40,8 +39,8 @@ private:
   unsigned char client_data_[max_data_length];
   unsigned char server_data_[max_data_length];
 
-  on_data_cb on_client_data_;
-  on_data_cb on_server_data_;
+  tcp_mitm_factory &mitm_factory_;
+  p_tcp_mitm mitm_;
 
   std::mutex mutex_;
 
@@ -49,7 +48,11 @@ public:
   class acceptor {
   public:
 
-    acceptor(asio::io_service& io_service, const std::string& listen_host, unsigned short listen_port, const std::string& server_host, unsigned short server_port, on_data_cb on_client_data = dummy_cb, on_data_cb on_server_data = dummy_cb);
+    acceptor(
+      asio::io_service& io_service, 
+      const std::string& listen_host, unsigned short listen_port, 
+      const std::string& server_host, unsigned short server_port, 
+      tcp_mitm_factory& mitm_factory);
 
     bool accept_connections();
 
@@ -60,12 +63,11 @@ public:
     asio::io_service& io_service_;
     asio::ip::address_v4 listenhost_address;
     asio::ip::tcp::acceptor acceptor_;
-    ptr_type session_;
+    std::shared_ptr<tcp_bridge> session_;
     unsigned short server_port_;
     std::string server_host_;
 
-    on_data_cb on_client_data_;
-    on_data_cb on_server_data_;
+    tcp_mitm_factory &mitm_factory_;
   };
 };
 

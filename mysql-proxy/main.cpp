@@ -6,6 +6,8 @@
 #include "tcp_bridge.h"
 #include "logger.h"
 
+#include "tcp_size_logger.h"
+
 
 int main(int argc, char* argv[]) {
   Logger_RAII logger("proxy.log");
@@ -32,10 +34,12 @@ int main(int argc, char* argv[]) {
 
   try {
     LOG << "starting server on " << listen_host << "::" << listen_port;
+
+    tcp_size_logger_factory log_data;
     tcp_bridge::acceptor acceptor(ios,
       listen_host, listen_port,
       forward_host, forward_port,
-      on_client_data, on_server_data);
+      log_data);
 
     acceptor.accept_connections();
 
