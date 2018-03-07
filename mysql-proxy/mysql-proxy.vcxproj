@@ -120,9 +120,11 @@
   <ItemGroup>
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tcp_bridge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="logger.h" />
+    <ClInclude Include="tcp_bridge.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
