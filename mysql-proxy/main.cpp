@@ -7,6 +7,7 @@
 #include "logger.h"
 
 #include "mysql_request_mitm.h"
+#include "mysql_com_query_sniffer.h"
 
 
 int main(int argc, char* argv[]) {
@@ -24,22 +25,15 @@ int main(int argc, char* argv[]) {
 
   asio::io_service ios;
 
-  auto on_client_data = [](unsigned char*, size_t bytes) {
-    LOG_TRACE() << "Got " << bytes << " bytes from client";
-  };
-
-  auto on_server_data = [](unsigned char*, size_t bytes) {
-    LOG_TRACE() << "Got " << bytes << " bytes from server";
-  };
-
   try {
     LOG_TRACE() << "starting server on " << listen_host << "::" << listen_port;
 
-    mysql_request_mitm_factory com_query_request_logger;
+    mysql_com_query_sniffer_factory com_query_request_logger_factory;
+    mysql_request_mitm_factory mitm_factory(com_query_request_logger_factory);
     tcp_bridge::acceptor acceptor(ios,
       listen_host, listen_port,
       forward_host, forward_port,
-      com_query_request_logger);
+      mitm_factory);
 
     acceptor.accept_connections();
 

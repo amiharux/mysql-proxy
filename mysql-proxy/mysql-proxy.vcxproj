@@ -121,12 +121,15 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mysql_command_sniffer.cpp" />
     <ClCompile Include="tcp_bridge.cpp" />
     <ClCompile Include="mysql_request_mitm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="logger.h" />
+    <ClInclude Include="mysql_command_sniffer.h" />
+    <ClInclude Include="mysql_com_query_sniffer.h" />
     <ClInclude Include="mysql_streaming_sniffer.h" />
     <ClInclude Include="tcp_bridge.h" />
     <ClInclude Include="tcp_mitm.h" />
