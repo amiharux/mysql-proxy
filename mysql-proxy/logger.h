@@ -37,6 +37,12 @@ public:
   LOG_TRACE(const std::string &v) : LOG_TRACE() { *this << v << " "; }
 };
 
+class LOG_INFO : public Logger_Entry {
+public:
+  LOG_INFO() : Logger_Entry(3) { }
+  LOG_INFO(const std::string &v) : LOG_INFO() { *this << v << " "; }
+};
+
 class Logger_RAII {
 public:
   Logger_RAII(const std::string &path = "log.log") {

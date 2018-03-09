@@ -30,7 +30,7 @@ Logger& Logger::operator<<(const Logger_Entry &entry)
 {
   std::string str = entry.str();
   std::cout << str << std::endl;
-  if (_file.is_open()) {
+  if (entry.level() <= 4) {
     _file << str << std::endl;
   }
   return *this;

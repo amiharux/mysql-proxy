@@ -27,7 +27,7 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mysql_command_mitm.cpp">
+    <ClCompile Include="mysql_packet_mitm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClInclude Include="tcp_mitm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mysql_command_mitm.h">
+    <ClInclude Include="mysql_packet_mitm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

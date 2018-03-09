@@ -6,7 +6,7 @@
 #include "tcp_bridge.h"
 #include "logger.h"
 
-#include "mysql_command_mitm.h"
+#include "mysql_packet_mitm.h"
 
 
 int main(int argc, char* argv[]) {
