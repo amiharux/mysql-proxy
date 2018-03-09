@@ -4,6 +4,18 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <initializer_list>
+
+class Logger_Entry : public std::stringstream {
+public:
+  Logger_Entry(int level = 0);
+  virtual ~Logger_Entry() override;
+
+  int level() const { return _level; }
+
+private:
+  int _level;
+};
 
 class Logger {
   Logger(const std::string &path = "log.log");
@@ -13,21 +25,17 @@ public:
   static void destroy();
 
 public:
-  Logger& operator<< (const std::string &str);
+  Logger& operator<< (const Logger_Entry &entry);
 
 private:
   std::ofstream _file;
 };
 
-class Logger_Entry : public std::stringstream {
+class LOG_TRACE : public Logger_Entry {
 public:
-  virtual ~Logger_Entry() override {
-    Logger::instance() << this->str();
-  }
+  LOG_TRACE() : Logger_Entry(6) { }
+  LOG_TRACE(const std::string &v) : LOG_TRACE() { *this << v << " "; }
 };
-
-#define LOG Logger_Entry{}
-#define LOG_ID(identity) Logger_Entry{} << (identity) << ": "
 
 class Logger_RAII {
 public:

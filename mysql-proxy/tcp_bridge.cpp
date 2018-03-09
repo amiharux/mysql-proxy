@@ -13,12 +13,12 @@ tcp_bridge::tcp_bridge(
   , server_socket_(ios)
   , mitm_factory_(mitm_factory)
 {
-  LOG_ID(client_id()) << "[bridge::construct]";
+  LOG_TRACE(client_id()) << "[bridge::construct]";
 }
 
 tcp_bridge::~tcp_bridge()
 {
-  LOG_ID(client_id()) << "[bridge::destruct]";
+  LOG_TRACE(client_id()) << "[bridge::destruct]";
 }
 
 socket_type& tcp_bridge::client_socket()
@@ -38,7 +38,7 @@ std::string tcp_bridge::client_id() const
 
 void tcp_bridge::start(const std::string& server_host, unsigned short server_port)
 {
-  LOG_ID(client_id()) << "[bridge::start]";
+  LOG_TRACE(client_id()) << "[bridge::start]";
   server_socket_.async_connect(
     asio::ip::tcp::endpoint(asio::ip::address::from_string(server_host), server_port),
     [self = shared_from_this()](const asio::error_code& error) {
@@ -51,7 +51,7 @@ void tcp_bridge::start(const std::string& server_host, unsigned short server_por
 void tcp_bridge::handle_server_connect(const asio::error_code& error)
 {
   if (error) { return close(); }
-  LOG_ID(client_id()) << "[bridge::handle_server_connect]";
+  LOG_TRACE(client_id()) << "[bridge::handle_server_connect]";
 
   async_read_from_server(error);
   async_read_from_client(error);
@@ -60,7 +60,7 @@ void tcp_bridge::handle_server_connect(const asio::error_code& error)
 void tcp_bridge::async_write_to_client(const asio::error_code& error, size_t bytes)
 {
   if (error) { return close(); }
-  LOG_ID(client_id()) << "[bridge::async_write_to_client]";
+  LOG_TRACE(client_id()) << "[bridge::async_write_to_client]";
 
   async_write(client_socket_, asio::buffer(server_data_, bytes),
     [self = shared_from_this()](const asio::error_code& error, size_t) {
@@ -72,7 +72,7 @@ void tcp_bridge::async_write_to_client(const asio::error_code& error, size_t byt
 void tcp_bridge::async_read_from_server(const asio::error_code& error)
 {
   if (error) { return close(); }
-  LOG_ID(client_id()) << "[bridge::async_read_from_server]";
+  LOG_TRACE(client_id()) << "[bridge::async_read_from_server]";
 
   server_socket_.async_read_some(asio::buffer(server_data_, max_data_length),
     [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
@@ -85,7 +85,7 @@ void tcp_bridge::async_read_from_server(const asio::error_code& error)
 void tcp_bridge::async_write_to_server(const asio::error_code& error, size_t bytes)
 {
   if (error) { return close(); }
-  LOG_ID(client_id()) << "[bridge::async_write_to_server]";
+  LOG_TRACE(client_id()) << "[bridge::async_write_to_server]";
 
   async_write(server_socket_, asio::buffer(client_data_, bytes),
     [self = shared_from_this()](const asio::error_code& error, size_t) {
@@ -97,7 +97,7 @@ void tcp_bridge::async_write_to_server(const asio::error_code& error, size_t byt
 void tcp_bridge::async_read_from_client(const asio::error_code& error)
 {
   if (error) { return close(); }
-  LOG_ID(client_id()) << "[bridge::async_read_from_client]";
+  LOG_TRACE(client_id()) << "[bridge::async_read_from_client]";
 
   client_socket_.async_read_some(asio::buffer(client_data_, max_data_length),
     [self = shared_from_this()](const asio::error_code& error, size_t bytes) {
@@ -111,7 +111,7 @@ void tcp_bridge::close()
 {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  LOG_ID(client_id()) << "[bridge::close]";
+  LOG_TRACE(client_id()) << "[bridge::close]";
 
   if (client_socket_.is_open()) {
     client_socket_.close();
@@ -146,7 +146,7 @@ tcp_bridge::acceptor::acceptor(
 
 bool tcp_bridge::acceptor::accept_connections()
 {
-  LOG << "[bridge::acceptor::accept_connections]";
+  LOG_TRACE() << "[bridge::acceptor::accept_connections]";
   try {
     session_ = std::make_shared<tcp_bridge>(io_service_, mitm_factory_);
 
@@ -157,7 +157,7 @@ bool tcp_bridge::acceptor::accept_connections()
     );
   }
   catch (std::exception& e) {
-    LOG << "acceptor exception: " << e.what() << std::endl;
+    LOG_TRACE() << "acceptor exception: " << e.what() << std::endl;
     return false;
   }
 
@@ -166,16 +166,16 @@ bool tcp_bridge::acceptor::accept_connections()
 
 void tcp_bridge::acceptor::handle_accept(const asio::error_code& error)
 {
-  LOG_ID(session_->client_id()) << "[bridge::acceptor::handle_accept]";
+  LOG_TRACE(session_->client_id()) << "[bridge::acceptor::handle_accept]";
   if (!error) {
     session_->start(server_host_, server_port_);
 
     if (!accept_connections()) {
-      LOG << "Failure during call to accept." << std::endl;
+      LOG_TRACE() << "Failure during call to accept." << std::endl;
     }
   }
   else {
-    LOG << "Error: " << error.message() << std::endl;
+    LOG_TRACE() << "Error: " << error.message() << std::endl;
   }
 }
 

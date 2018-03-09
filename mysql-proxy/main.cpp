@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
   Logger_RAII logger("proxy.log");
 
   if (argc != 5) {
-    LOG << "usage: mysql-proxy <listen host ip> <listen port> <forward host ip> <forward port>" << std::endl;
+    LOG_TRACE() << "usage: mysql-proxy <listen host ip> <listen port> <forward host ip> <forward port>" << std::endl;
     return 1;
   }
 
@@ -25,15 +25,15 @@ int main(int argc, char* argv[]) {
   asio::io_service ios;
 
   auto on_client_data = [](unsigned char*, size_t bytes) {
-    LOG << "Got " << bytes << " bytes from client";
+    LOG_TRACE() << "Got " << bytes << " bytes from client";
   };
 
   auto on_server_data = [](unsigned char*, size_t bytes) {
-    LOG << "Got " << bytes << " bytes from server";
+    LOG_TRACE() << "Got " << bytes << " bytes from server";
   };
 
   try {
-    LOG << "starting server on " << listen_host << "::" << listen_port;
+    LOG_TRACE() << "starting server on " << listen_host << "::" << listen_port;
 
     mysql_request_mitm_factory com_query_request_logger;
     tcp_bridge::acceptor acceptor(ios,
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     ios.run();
   } 
   catch (std::exception& e) {
-    LOG << "Error: " << e.what() << std::endl;
+    LOG_TRACE() << "Error: " << e.what() << std::endl;
     return 1;
   }
 
