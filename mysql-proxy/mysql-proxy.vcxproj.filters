@@ -27,10 +27,7 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mysql_request_mitm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mysql_command_sniffer.cpp">
+    <ClCompile Include="mysql_command_mitm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,16 +44,7 @@
     <ClInclude Include="tcp_mitm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mysql_request_mitm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql_streaming_sniffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql_command_sniffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql_com_query_sniffer.h">
+    <ClInclude Include="mysql_command_mitm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

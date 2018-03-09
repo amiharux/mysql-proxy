@@ -6,8 +6,7 @@
 #include "tcp_bridge.h"
 #include "logger.h"
 
-#include "mysql_request_mitm.h"
-#include "mysql_com_query_sniffer.h"
+#include "mysql_command_mitm.h"
 
 
 int main(int argc, char* argv[]) {
@@ -28,12 +27,11 @@ int main(int argc, char* argv[]) {
   try {
     LOG_TRACE() << "starting server on " << listen_host << "::" << listen_port;
 
-    mysql_com_query_sniffer_factory com_query_request_logger_factory;
-    mysql_request_mitm_factory mitm_factory(com_query_request_logger_factory);
+    mysql_com_query_mitm_factory com_query_request_logger_factory;
     tcp_bridge::acceptor acceptor(ios,
       listen_host, listen_port,
       forward_host, forward_port,
-      mitm_factory);
+      com_query_request_logger_factory);
 
     acceptor.accept_connections();
 

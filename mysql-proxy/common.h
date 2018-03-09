@@ -13,12 +13,12 @@ public:
   virtual std::unique_ptr<Base> build(Args ...args) = 0;
 };
 
-template <typename T, typename TBase, typename Parent, typename ...Args>
-class concrete_factory : public Parent {
+template <typename T, typename Base, typename ...Args>
+class concrete_factory : public factory<Base, Args...> {
 public:
   virtual ~concrete_factory() override = default;
 
-  virtual std::unique_ptr<TBase> build(Args ...args) override {
+  virtual std::unique_ptr<Base> build(Args ...args) override {
     return std::make_unique<T>(args...);
   }
 };
