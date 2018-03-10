@@ -25,7 +25,10 @@ public:
   std::string pop();
   void push(std::string&& item);
 
-  void deactivate() { _is_running.store(false); }
+  void deactivate() { 
+    _is_running.store(false); 
+    _cond.notify_all();
+  }
 
 private:
   std::queue<std::string> _queue;

@@ -49,7 +49,9 @@ void logger::run() {
 #ifdef DEBUG
     std::cout << str << std::endl;
 #endif // DEBUG
-    _file << str << std::endl;
+    if (_is_running.load()) {
+      _file << str << std::endl;
+    }
   }
 }
 
@@ -68,9 +70,12 @@ std::string logger_queue::pop() {
   {
     _cond.wait(mlock);
   }
-  auto item = _queue.front();
-  _queue.pop();
-  return item;
+  if (!_queue.empty()) {
+    auto item = _queue.front();
+    _queue.pop();
+    return item;
+  }
+  return "";
 }
 
 void logger_queue::push(std::string&& item) {
