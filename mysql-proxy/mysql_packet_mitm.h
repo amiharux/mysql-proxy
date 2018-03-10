@@ -4,10 +4,51 @@
 #include "tcp_mitm.h"
 #include "common.h"
 
-class mysql_packet_mitm : public tcp_mitm {
+class mysql_packet : public std::vector<unsigned char> {
 public:
-  using mysql_packet = std::vector<unsigned char>;
+  static const unsigned OPCODE_COM_QUERY = 0x03;
+  static const size_t HEADER_SIZE = 4;
 
+public:
+  size_t payload_length() const {
+    assert(has_header());
+    return (*this)[0] + ((*this)[1] << 8) + ((*this)[2] << 16);
+  }
+
+  unsigned sequence() const {
+    assert(has_header());
+    return (*this)[3];
+  }
+
+  unsigned opcode() const {
+    assert(size() > HEADER_SIZE);
+    return (*this)[HEADER_SIZE];
+  }
+
+  std::string command() const {
+    assert(size() > HEADER_SIZE + 1);
+    return std::string(begin() + HEADER_SIZE + 1, end());
+  }
+
+public:
+  bool has_header() const {
+    return size() >= HEADER_SIZE;
+  }
+
+  size_t header_bytes_left() const {
+    return has_header() ? 0 : HEADER_SIZE - size();
+  }
+
+  bool has_body() const {
+    return has_header() && size() >= payload_length() + HEADER_SIZE;
+  }
+
+  size_t body_bytes_left() const {
+    return has_body() ? 0 : payload_length() + HEADER_SIZE - size();
+  }
+};
+
+class mysql_packet_mitm : public tcp_mitm {
 public:
   mysql_packet_mitm(const socket_type &s)
     : tcp_mitm(s) { }
