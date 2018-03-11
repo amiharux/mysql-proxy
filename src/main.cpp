@@ -9,11 +9,13 @@
 #include "mysql_packet_mitm.h"
 
 
+using namespace mysql_proxy;
+
 int main(int argc, char* argv[]) {
   Logger_RAII logger("proxy.log");
 
   if (argc != 5) {
-    LOG_TRACE() << "usage: mysql-proxy <listen host ip> <listen port> <forward host ip> <forward port>" << std::endl;
+    std::cerr << "usage: " << argv[0] << " <listen host ip> <listen port> <forward host ip> <forward port>" << std::endl;
     return 1;
   }
 
@@ -25,7 +27,7 @@ int main(int argc, char* argv[]) {
   asio::io_service ios;
 
   try {
-    LOG_TRACE() << "starting server on " << listen_host << "::" << listen_port;
+    std::cout << "starting server on " << listen_host << "::" << listen_port;
 
     mysql_com_query_mitm_factory com_query_request_logger_factory;
     tcp_bridge::acceptor acceptor(ios,
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
     ios.run();
   } 
   catch (std::exception& e) {
-    LOG_TRACE() << "Error: " << e.what() << std::endl;
+    std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }
 

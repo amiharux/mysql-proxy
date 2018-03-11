@@ -12,6 +12,8 @@
 #include <condition_variable>
 #include <atomic>
 
+namespace mysql_proxy {
+  
 class logger_entry : public std::stringstream {
 public:
   logger_entry(const std::string &v ="");
@@ -78,5 +80,7 @@ public:
     logger::destroy();
   }
 };
+
+}
 
 #endif // _LOGGER_H_

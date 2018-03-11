@@ -3,6 +3,8 @@
 
 #include <asio.hpp>
 
+namespace mysql_proxy {
+
 using socket_type = asio::ip::tcp::socket;
 std::string identity(const socket_type &s);
 
@@ -22,5 +24,7 @@ public:
     return std::make_unique<T>(args...);
   }
 };
+
+}
 
 #endif // _COMMON_H_

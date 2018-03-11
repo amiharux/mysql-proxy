@@ -7,6 +7,8 @@
 #include <ctime>
 #include <iomanip>
 
+namespace mysql_proxy {
+
 std::unique_ptr<logger> logger_instance;
 
 void logger::initialize(const std::string &path /*= "log.log"*/) {
@@ -83,4 +85,6 @@ void logger_queue::push(std::string&& item) {
   _queue.push(std::move(item));
   mlock.unlock();
   _cond.notify_one();
+}
+
 }

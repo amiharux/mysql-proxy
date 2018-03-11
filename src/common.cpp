@@ -4,6 +4,8 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace mysql_proxy {
+
 std::string identity(const socket_type &s)
 {
   std::stringstream ss;
@@ -15,4 +17,6 @@ std::string identity(const socket_type &s)
     ss << "<" << err.code() << ">";
   }
   return ss.str();
+}
+
 }

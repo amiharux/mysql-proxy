@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+namespace mysql_proxy {
+
 class tcp_mitm {
 public:
   tcp_mitm(const socket_type &client_socket)
@@ -25,4 +27,5 @@ protected:
 
 using tcp_mitm_factory = factory<tcp_mitm, const socket_type &>;
 
+}
 #endif // _TCP_MITM_H_

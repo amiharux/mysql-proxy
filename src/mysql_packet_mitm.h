@@ -4,6 +4,8 @@
 #include "tcp_mitm.h"
 #include "common.h"
 
+namespace mysql_proxy {
+
 class mysql_packet : public std::vector<unsigned char> {
 public:
   static const unsigned OPCODE_COM_QUERY = 0x03;
@@ -88,4 +90,5 @@ using mysql_com_query_mitm_factory = concrete_factory<
   tcp_mitm,
   const socket_type &>;
 
+}
 #endif // _MYSQL_PACKET_MITM_H_

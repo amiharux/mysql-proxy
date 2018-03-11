@@ -7,6 +7,7 @@
 #include <functional>
 #include <iomanip>
 
+namespace mysql_proxy {
 
 //////////////////////////////////////////////////////////////////////////
 // class mysql_packet_mitm
@@ -87,4 +88,6 @@ void mysql_com_query_mitm::handle_client_packet(const std::vector<mysql_packet> 
     log << "COM_QUERY: ";
     for (auto &el : cmds) { log << el.command(); }
   }
+}
+
 }

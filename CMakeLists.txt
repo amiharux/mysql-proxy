@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-FILE(GLOB Sources src/*.cpp)
+FILE(GLOB Sources src/*.cpp src/*.h)
 include_directories (3rd-party/asio-1.10.6/include)
 add_definitions(-DASIO_STANDALONE)
 IF (WIN32)

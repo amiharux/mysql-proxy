@@ -9,6 +9,7 @@
 #include "common.h"
 #include "tcp_mitm.h"
 
+namespace mysql_proxy {
 
 using on_data_cb = std::function<void(unsigned char*, size_t)>;
 const on_data_cb dummy_cb = [](unsigned char*, size_t) {};
@@ -70,5 +71,7 @@ public:
     tcp_mitm_factory &mitm_factory_;
   };
 };
+
+}
 
 #endif // _TCP_BRIDGE_H_
