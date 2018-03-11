@@ -14,8 +14,7 @@
 
 class logger_entry : public std::stringstream {
 public:
-  logger_entry();
-  logger_entry(const std::string &v);
+  logger_entry(const std::string &v ="");
   virtual ~logger_entry() override;
 };
 

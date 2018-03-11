@@ -53,31 +53,7 @@ void logger::run() {
   }
 }
 
-std::string formatted_time()
-{
-  using namespace std::chrono;
-  auto now = system_clock::now();
-  auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
-
-  auto timer = system_clock::to_time_t(now);
-
-  std::tm bt;
-  localtime_s(&bt, &timer);
-
-  std::ostringstream oss;
-
-  oss << std::put_time(&bt, "%T");
-  oss << '.' << std::setfill('0') << std::setw(3) << ms.count();
-
-  return oss.str();
-}
-
-logger_entry::logger_entry() {
-  *this << formatted_time() << ": ";
-}
-
 logger_entry::logger_entry(const std::string &v)
-  : logger_entry()
 {
   *this << v << " ";
 }
