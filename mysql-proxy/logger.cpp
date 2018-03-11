@@ -7,33 +7,50 @@
 #include <ctime>
 #include <iomanip>
 
-std::unique_ptr<Logger> logger_instance;
+std::unique_ptr<logger> logger_instance;
 
-void Logger::initialize(const std::string &path /*= "log.log"*/) {
-  logger_instance.reset(new Logger(path));
+void logger::initialize(const std::string &path /*= "log.log"*/) {
+  logger_instance.reset(new logger(path));
 }
 
-Logger &Logger::instance() {
-  if (!logger_instance) { Logger::initialize(); }
+logger &logger::instance() {
+  if (!logger_instance) { logger::initialize(); }
   if (logger_instance) { return *logger_instance; }
   throw std::runtime_error("Cannot access the logger");
 }
 
-void Logger::destroy() {
+void logger::destroy() {
   if (logger_instance) { logger_instance.reset(); }
 }
 
-Logger::Logger(const std::string &path /*= "log.log"*/)
-  : _file(path, std::ios_base::app) { }
-
-Logger& Logger::operator<<(const Logger_Entry &entry)
+logger::logger(const std::string &path /*= "log.log"*/)
+  : _file(path, std::ios_base::app), _is_running(true)
 {
-  std::string str = entry.str();
-  std::cout << str << std::endl;
-  if (entry.level() <= 4) {
+  _worker = std::make_unique<std::thread>([&]() { run(); });
+}
+
+logger::~logger() {
+  _is_running.store(false);
+  _queue.deactivate();
+  if (_worker) {
+    _worker->join();
+  }
+}
+
+logger& logger::operator<<(const logger_entry &entry)
+{
+  _queue.push(entry.str());
+  return *this;
+}
+
+void logger::run() {
+  while (_is_running.load()) {
+    auto str = _queue.pop();
+#ifdef DEBUG
+    std::cout << str << std::endl;
+#endif // DEBUG
     _file << str << std::endl;
   }
-  return *this;
 }
 
 std::string formatted_time()
@@ -55,12 +72,34 @@ std::string formatted_time()
   return oss.str();
 }
 
-Logger_Entry::Logger_Entry(int level) 
-  : _level(level) 
-{
+logger_entry::logger_entry() {
   *this << formatted_time() << ": ";
 }
 
-Logger_Entry::~Logger_Entry() {
-  Logger::instance() << *this;
+logger_entry::logger_entry(const std::string &v)
+  : logger_entry()
+{
+  *this << v << " ";
+}
+
+logger_entry::~logger_entry() {
+  logger::instance() << *this;
+}
+
+std::string logger_queue::pop() {
+  std::unique_lock<std::mutex> mlock(_mutex);
+  while (_is_running.load() && _queue.empty())
+  {
+    _cond.wait(mlock);
+  }
+  auto item = _queue.front();
+  _queue.pop();
+  return item;
+}
+
+void logger_queue::push(std::string&& item) {
+  std::unique_lock<std::mutex> mlock(_mutex);
+  _queue.push(std::move(item));
+  mlock.unlock();
+  _cond.notify_one();
 }

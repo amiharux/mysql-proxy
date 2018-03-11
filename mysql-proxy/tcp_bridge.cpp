@@ -109,7 +109,7 @@ void tcp_bridge::async_read_from_client(const asio::error_code& error)
 
 void tcp_bridge::close()
 {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard<std::mutex> lock(_mutex);
 
   LOG_TRACE(client_id()) << "[bridge::close]";
 

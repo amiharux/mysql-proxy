@@ -6,50 +6,74 @@
 #include <sstream>
 #include <initializer_list>
 
-class Logger_Entry : public std::stringstream {
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+
+class logger_entry : public std::stringstream {
 public:
-  Logger_Entry(int level = 0);
-  virtual ~Logger_Entry() override;
-
-  int level() const { return _level; }
-
-private:
-  int _level;
+  logger_entry();
+  logger_entry(const std::string &v);
+  virtual ~logger_entry() override;
 };
 
-class Logger {
-  Logger(const std::string &path = "log.log");
+class logger_queue {
+public:
+  logger_queue() : _is_running(true) { }
+
+  std::string pop();
+  void push(std::string&& item);
+
+  void deactivate() { _is_running.store(false); }
+
+private:
+  std::queue<std::string> _queue;
+  std::mutex _mutex;
+  std::condition_variable _cond;
+  std::atomic<bool> _is_running;
+};
+
+class logger {
+  logger(const std::string &path = "log.log");
+
+public:
+  virtual ~logger();
+
 public:
   static void initialize(const std::string &path = "log.log");
-  static Logger &instance();
+  static logger &instance();
   static void destroy();
 
 public:
-  Logger& operator<< (const Logger_Entry &entry);
+  logger& operator<< (const logger_entry &entry);
 
 private:
+  void run();
+
   std::ofstream _file;
+  logger_queue _queue;
+
+  std::atomic<bool> _is_running;
+  std::unique_ptr<std::thread> _worker;
 };
 
-class LOG_TRACE : public Logger_Entry {
-public:
-  LOG_TRACE() : Logger_Entry(6) { }
-  LOG_TRACE(const std::string &v) : LOG_TRACE() { *this << v << " "; }
-};
+#ifdef DEBUG
+using LOG_TRACE = logger_entry;
+#else
+using LOG_TRACE = std::stringstream;
+#endif // DEBUG
 
-class LOG_INFO : public Logger_Entry {
-public:
-  LOG_INFO() : Logger_Entry(3) { }
-  LOG_INFO(const std::string &v) : LOG_INFO() { *this << v << " "; }
-};
+using LOG_INFO = logger_entry;
 
 class Logger_RAII {
 public:
   Logger_RAII(const std::string &path = "log.log") {
-    Logger::initialize(path);
+    logger::initialize(path);
   }
   ~Logger_RAII() {
-    Logger::destroy();
+    logger::destroy();
   }
 };
 

@@ -42,7 +42,7 @@ private:
   tcp_mitm_factory &mitm_factory_;
   std::unique_ptr<tcp_mitm> mitm_;
 
-  std::mutex mutex_;
+  std::mutex _mutex;
 
 public:
   class acceptor {
