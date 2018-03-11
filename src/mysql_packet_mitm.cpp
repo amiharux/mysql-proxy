@@ -33,7 +33,7 @@ mysql_client_packet_mitm::~mysql_client_packet_mitm() {
 void mysql_client_packet_mitm::on_client_data_impl(unsigned char *data, size_t bytes) {
   if (bytes == 0) { return; }
 
-  if (_client_packets.empty() || _client_packets.back().has_header() && _client_packets.back().has_body()) {
+  if (_client_packets.empty() || (_client_packets.back().has_header() && _client_packets.back().has_body())) {
     _client_packets.emplace_back();
   }
 
